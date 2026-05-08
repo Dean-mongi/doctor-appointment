@@ -117,49 +117,11 @@ return [
     | Supported drivers: "file", "cache"
     |
     */
-    // 'providers' => [
-    //     // Other service providers
-    //     App\Providers\AppServiceProvider::class,
-    //     Laravel\Fortify\FortifyServiceProvider::class,
-    //     Spatie\Permission\PermissionServiceProvider::class,
-
-    //     // ...
-    // ],
-
-    // 'providers' => [
-    //     // Other Service Providers...
-    
-    //     Spatie\Permission\PermissionServiceProvider::class,
-    // ],
-    
-
-    // 'providers' => [
-    //     /*
-    //      * Laravel Framework Service Providers...
-    //      */
-    //     Illuminate\Auth\AuthServiceProvider::class,
-    //     Illuminate\Broadcasting\BroadcastServiceProvider::class,
-    //     // ... other providers ...
-    //     Illuminate\Filesystem\FilesystemServiceProvider::class, // Ensure this line exists
-    //     //... your custom providers ...
-    //    Spatie\Permission\PermissionServiceProvider::class,
-    // ],
-
-
-    // 'aliases' => [
-    //     'App' => App\Facades\App::class,
-    //     'Files' => App\Facades\Files::class,
-    //     // ...
-    // ],
-    
-    
 
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    
-    
-
 ];
+

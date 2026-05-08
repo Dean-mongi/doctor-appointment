@@ -24,9 +24,15 @@
 
                             <!-- Logo -->
                             <div class="card-header pt-4 pb-4 text-center bg-primary">
-                                <a href="index.html">
-                                    <span><img src="{{ asset('assets/images/logo.png') }}" alt="" height="150"></span>
-                                </a>
+                                <div style="display:flex;align-items:center;justify-content:center;gap:14px;">
+                                    <div style="width:48px;height:48px;border-radius:14px;background:#0ea5e9;display:flex;align-items:center;justify-content:center;">
+                                        <i class="fas fa-user-md" style="color:#fff;font-size:22px;"></i>
+                                    </div>
+                                    <div style="text-align:left;">
+                                        <div style="font-weight:800;font-size:18px;line-height:1.2;">Doctor Appointment</div>
+                                        <div style="color:#6b7280;font-size:12px;">Online Doctor Booking System</div>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="card-body p-4">

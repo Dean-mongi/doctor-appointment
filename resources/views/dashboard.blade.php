@@ -1,5 +1,18 @@
 @extends('layouts.app')
 @section('main')
+    <style>
+        /* Dashboard polish */
+        .dashboard-wrap .page-title-box{margin-bottom:18px;}
+        .dashboard-wrap .card{border-radius:14px; box-shadow:0 8px 26px rgba(15,23,42,.06); border:1px solid rgba(15,23,42,.06);}        
+        .dashboard-wrap .header-title{font-weight:800; font-size:1.12rem; color:#0f172a;}
+        .dashboard-wrap .widget-flat{border-radius:14px;}
+        .dashboard-wrap .widget-icon{opacity:.9;}
+        .dashboard-wrap .table th,.dashboard-wrap .table td{vertical-align:middle;}
+        .dashboard-wrap .rounded-circle{box-shadow:0 6px 18px rgba(2,6,23,.12);}        
+    </style>
+
+    <div class="dashboard-wrap">
+
  <!-- start page title -->
  @if(auth()->user()->hasRole('super_admin') )
  <div class="row">
