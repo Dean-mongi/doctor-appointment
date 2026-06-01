@@ -18,7 +18,7 @@
                 <div class="hero-kicker">{{ $roleName }} Dashboard</div>
                 <h2>Online Doctor Appointment and Hospital Handling System</h2>
                 <p class="mb-0" style="color: rgba(255,255,255,.82);">
-                    A responsive command center for bookings, care teams, pharmacy movement, patients, reports, and access control.
+                    
                 </p>
             </div>
             <div class="col-lg-5">
