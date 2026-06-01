@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-use Log;
 use Carbon\Carbon;
 use App\Models\Doctor;
 use App\Models\Appointment;
@@ -61,13 +60,23 @@ class AppointmentsController extends Controller
     public function store(Request $request)
     {
         try {
-            $validated = $request->validate([
+            $validator = Validator::make($request->all(), [
                 'patient_id' => 'required|exists:patients,id',
                 'doctor_id' => 'required|exists:doctors,id',
                 'reason' => 'required|string',
                 'date' => 'required|date',
                 'time' => 'required|date_format:H:i',
             ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors(),
+                ], 422);
+            }
+
+            $validated = $validator->validated();
 
             // Check for existing appointments
             $existingAppointment = Appointment::where('doctor_id', $request->input('doctor_id'))
@@ -81,19 +90,25 @@ class AppointmentsController extends Controller
 
             $appointment = Appointment::create($validated);
 
-            // Send email notifications
-            $doctor = Doctor::find($request->input('doctor_id'));
-            $patient = Patient::find($request->input('patient_id'));
+            $message = 'Appointment scheduled successfully.';
 
-            // Send to doctor
-            Mail::to($doctor->email)->send(new DoctorNotificationMail($appointment));
+            try {
+                $doctor = Doctor::find($request->input('doctor_id'));
+                $patient = Patient::find($request->input('patient_id'));
 
-            // Send to patient
-            Mail::to($patient->email)->send(new PatientNotificationMail($appointment));
+                if ($doctor && $doctor->email) {
+                    Mail::to($doctor->email)->send(new DoctorNotificationMail($appointment));
+                }
 
-            return response()->json(['success' => true, 'message' => 'Appointment scheduled successfully.']);
-        } catch (\Exception $e) {
-            Log::error('Failed to create appointment: '.$e->getMessage());
+                if ($patient && $patient->email) {
+                    Mail::to($patient->email)->send(new PatientNotificationMail($appointment));
+                }
+            } catch (\Throwable $mailException) {
+                $message = 'Appointment scheduled successfully, but notification emails could not be sent.';
+            }
+
+            return response()->json(['success' => true, 'message' => $message]);
+        } catch (\Throwable $e) {
             return response()->json(['success' => false, 'message' => 'Failed to schedule appointment.'], 500);
         }
     }

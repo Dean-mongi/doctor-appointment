@@ -101,14 +101,18 @@
             method: 'POST',
             body: formData,
             headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
             }
         })
-        .then(response => {
+        .then(async response => {
+            const data = await response.json().catch(() => null);
+
             if (!response.ok) {
-                throw new Error('Network response was not ok.');
+                throw new Error(data?.message || 'Failed to schedule appointment. Please check the form and try again.');
             }
-            return response.json();
+
+            return data;
         })
         .then(data => {
             if (data.success) {
@@ -133,7 +137,7 @@
             console.error('There was a problem with the fetch operation:', error);
             Swal.fire({
                 title: 'Error',
-                text: error.message || 'Failed to schedule appointment',
+                text: error.message || 'Failed to schedule appointment. Please try again.',
                 icon: 'error',
                 showConfirmButton: true
             });
