@@ -1,27 +1,29 @@
 @extends('layouts.app')
 
 @section('main')
-<!-- Start Page Title -->
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-            <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-                    <li class="breadcrumb-item active">Patient Report</li>
-                </ol>
+<div class="module-page reports-page">
+    <div class="module-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="module-kicker">Reports</div>
+                <h2>Patient Report</h2>
+                <p class="mb-0" style="color: rgba(255,255,255,.82);">Measure patient volume, appointments, pharmacy involvement, and spending patterns.</p>
             </div>
-            <h4 class="page-title">Patient Report</h4>
+            <div class="col-lg-5">
+                <div class="module-actions">
+                    <a href="{{ route('reports.appointments') }}" class="btn"><i class="mdi mdi-calendar-clock mr-1"></i> Appointments</a>
+                    <a href="{{ route('reports.pharmacy') }}" class="btn"><i class="mdi mdi-pill mr-1"></i> Pharmacy</a>
+                    <a href="{{ route('reports.doctors') }}" class="btn"><i class="mdi mdi-doctor mr-1"></i> Doctors</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<!-- End Page Title -->
 
 <!-- Start Widgets -->
 <div class="row mb-4">
     <!-- Total Patients Widget -->
     <div class="col-md-6 col-lg-3">
-        <div class="card text-center bg-primary text-white">
+        <div class="card metric-card metric-blue">
             <div class="card-body">
                 <h4 class="card-title mb-4">Total Patients</h4>
                 <h2 class="card-text">{{ $totalPatients }}</h2>
@@ -31,7 +33,7 @@
 
     <!-- Total Appointments Widget -->
     <div class="col-md-6 col-lg-3">
-        <div class="card text-center bg-warning text-white">
+        <div class="card metric-card metric-amber">
             <div class="card-body">
                 <h4 class="card-title mb-4">Total Appointments</h4>
                 <h2 class="card-text">{{ $totalAppointments }}</h2>
@@ -41,7 +43,7 @@
     
     <!-- Total Amount Earned Widget -->
     <div class="col-md-6 col-lg-3">
-        <div class="card text-center bg-success text-white">
+        <div class="card metric-card metric-green">
             <div class="card-body">
                 <h4 class="card-title mb-4">Total Amount Earned</h4>
                 <h2 class="card-text">${{ number_format($totalAmount, 2) }}</h2>
@@ -51,7 +53,7 @@
 
     <!-- Total Spent by Patients Widget -->
     <div class="col-md-6 col-lg-3">
-        <div class="card text-center bg-info text-white">
+        <div class="card metric-card metric-rose">
             <div class="card-body">
                 <h4 class="card-title mb-4">Total Spent by Patients</h4>
                 <h2 class="card-text">${{ number_format($totalSpentByPatients, 2) }}</h2>
@@ -64,7 +66,7 @@
 <!-- Filter Card -->
 <div class="row justify-content-center mb-4">
     <div class="col-lg-8">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <h4 class="header-title mb-0">Filter by Status</h4>
@@ -86,7 +88,7 @@
 <div class="row">
     @foreach($patients as $patient)
     <div class="col-md-6 col-lg-4">
-        <div class="card text-center mb-4">
+        <div class="card text-center module-panel mb-4">
             <div class="card-body">
                 <div class="avatar-lg mx-auto mb-3">
                     <img src="{{ $patient->avatar ? asset('storage/' . $patient->avatar) : 'https://via.placeholder.com/100' }}" alt="{{ $patient->name }}" class="rounded-circle img-thumbnail">
@@ -106,5 +108,5 @@
 </div>
 <!-- End Patient Cards -->
 
-
+</div>
 @endsection

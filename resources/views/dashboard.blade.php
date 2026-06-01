@@ -1,757 +1,325 @@
 @extends('layouts.app')
+
 @section('main')
-    <style>
-        /* Dashboard polish */
-        .dashboard-wrap .page-title-box{margin-bottom:18px;}
-        .dashboard-wrap .card{border-radius:14px; box-shadow:0 8px 26px rgba(15,23,42,.06); border:1px solid rgba(15,23,42,.06);}        
-        .dashboard-wrap .header-title{font-weight:800; font-size:1.12rem; color:#0f172a;}
-        .dashboard-wrap .widget-flat{border-radius:14px;}
-        .dashboard-wrap .widget-icon{opacity:.9;}
-        .dashboard-wrap .table th,.dashboard-wrap .table td{vertical-align:middle;}
-        .dashboard-wrap .rounded-circle{box-shadow:0 6px 18px rgba(2,6,23,.12);}        
-    </style>
+@php
+    $roleName = auth()->user()->hasRole('super_admin') ? 'Admin' : (auth()->user()->hasRole('doctor') ? 'Doctor' : 'Patient');
+    $latestAppointments = ($appointments ?? collect())->take(6);
+    $latestPharmacies = ($pharmacies ?? collect())->take(6);
+    $appointmentTotal = $totalAppointments ?? ($appointments ?? collect())->count();
+    $doctorTotal = $totalDoctorsCount ?? 0;
+    $patientTotal = $totalPatients ?? 0;
+    $pharmacyTotal = $totalPharmacyAmount ?? 0;
+@endphp
 
-    <div class="dashboard-wrap">
+<div class="da-dashboard">
+    <div class="da-dashboard-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="hero-kicker">{{ $roleName }} Dashboard</div>
+                <h2>Online Doctor Appointment and Hospital Handling System</h2>
+                <p class="mb-0" style="color: rgba(255,255,255,.82);">
+                    A responsive command center for bookings, care teams, pharmacy movement, patients, reports, and access control.
+                </p>
+            </div>
+            <div class="col-lg-5">
+                <div class="hero-actions">
+                    @can('create appointments')
+                        <a href="{{ route('appointments.create') }}" class="btn"><i class="mdi mdi-calendar-plus mr-1"></i> New Appointment</a>
+                    @endcan
+                    @can('view reports')
+                        <a href="{{ route('reports.appointments') }}" class="btn"><i class="mdi mdi-chart-line mr-1"></i> Reports</a>
+                    @endcan
+                    @can('view settings')
+                        <a href="{{ route('roles.index') }}" class="btn"><i class="mdi mdi-shield-account mr-1"></i> Configuration</a>
+                    @endcan
+                </div>
+            </div>
+        </div>
+    </div>
 
- <!-- start page title -->
- @if(auth()->user()->hasRole('super_admin') )
- <div class="row">
-                            <div class="col-12">
-                                <div class="page-title-box">
-                                    <div class="page-title-right">
-                                        <form class="form-inline">
-                                            <div class="form-group">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control form-control-light" id="dash-daterange">
-                                                    <div class="input-group-append">
-                                                        <span class="input-group-text bg-primary border-primary text-white">
-                                                            <i class="mdi mdi-calendar-range font-13"></i>
-                                                        </span>
+    @if(auth()->user()->hasRole('super_admin'))
+        <div class="row">
+            <div class="col-xl-3 col-md-6">
+                <div class="card metric-card metric-blue">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="text-white-50 font-weight-bold">Appointments</div>
+                                <h2 class="text-white mt-2 mb-1">{{ number_format($appointmentTotal) }}</h2>
+                                <span class="text-white-50">Total scheduled visits</span>
+                            </div>
+                            <span class="metric-icon"><i class="mdi mdi-calendar-clock"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card metric-card metric-green">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="text-white-50 font-weight-bold">Doctors</div>
+                                <h2 class="text-white mt-2 mb-1">{{ number_format($doctorTotal) }}</h2>
+                                <span class="text-white-50">Care providers</span>
+                            </div>
+                            <span class="metric-icon"><i class="mdi mdi-doctor"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card metric-card metric-rose">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="text-white-50 font-weight-bold">Patients</div>
+                                <h2 class="text-white mt-2 mb-1">{{ number_format($patientTotal) }}</h2>
+                                <span class="text-white-50">Registered profiles</span>
+                            </div>
+                            <span class="metric-icon"><i class="mdi mdi-account-heart"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="card metric-card metric-amber">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div class="text-white-50 font-weight-bold">Pharmacy</div>
+                                <h2 class="text-white mt-2 mb-1">{{ number_format($pharmacyTotal, 2) }}</h2>
+                                <span class="text-white-50">TZS collected</span>
+                            </div>
+                            <span class="metric-icon"><i class="mdi mdi-medical-bag"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="module-grid">
+            @can('view appointments')
+                <a class="module-tile" href="{{ route('appointments.index') }}">
+                    <span class="module-icon icon-appointments"><i class="mdi mdi-calendar-multiple"></i></span>
+                    <span>
+                        <span class="module-title d-block">Appointments</span>
+                        <span class="module-note">Book, monitor, and update patient visits.</span>
+                    </span>
+                </a>
+            @endcan
+            @can('view doctors')
+                <a class="module-tile" href="{{ route('doctors.index') }}">
+                    <span class="module-icon icon-doctors"><i class="mdi mdi-doctor"></i></span>
+                    <span>
+                        <span class="module-title d-block">Doctors</span>
+                        <span class="module-note">Manage specialists, availability, and contacts.</span>
+                    </span>
+                </a>
+            @endcan
+            @can('view pharmacy')
+                <a class="module-tile" href="{{ route('pharmacies.index') }}">
+                    <span class="module-icon icon-pharmacy"><i class="mdi mdi-pill"></i></span>
+                    <span>
+                        <span class="module-title d-block">Pharmacy</span>
+                        <span class="module-note">Track medicines, billing, and prescriptions.</span>
+                    </span>
+                </a>
+            @endcan
+            @can('view patients')
+                <a class="module-tile" href="{{ route('patients.index') }}">
+                    <span class="module-icon icon-patients"><i class="mdi mdi-account-group"></i></span>
+                    <span>
+                        <span class="module-title d-block">Patients</span>
+                        <span class="module-note">View records, contacts, and care activity.</span>
+                    </span>
+                </a>
+            @endcan
+            @can('view reports')
+                <a class="module-tile" href="{{ route('reports.appointments') }}">
+                    <span class="module-icon icon-reports"><i class="mdi mdi-chart-box"></i></span>
+                    <span>
+                        <span class="module-title d-block">Reports</span>
+                        <span class="module-note">Review trends and operational summaries.</span>
+                    </span>
+                </a>
+            @endcan
+            @can('view settings')
+                <a class="module-tile" href="{{ route('roles.index') }}">
+                    <span class="module-icon icon-config"><i class="mdi mdi-cog-sync"></i></span>
+                    <span>
+                        <span class="module-title d-block">System Configuration</span>
+                        <span class="module-note">Control roles, permissions, and access.</span>
+                    </span>
+                </a>
+            @endcan
+        </div>
+
+        <div class="row">
+            <div class="col-xl-7">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="header-title mb-0">Top Scheduled Doctors</h4>
+                            <a href="{{ route('reports.doctors') }}" class="btn btn-sm btn-light"><i class="mdi mdi-open-in-new mr-1"></i> View Report</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover table-centered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Doctor</th>
+                                        <th>Specialty</th>
+                                        <th>Appointments</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($topScheduledDoctors as $doctor)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <img src="{{ $doctor->avatar ? asset('storage/' . $doctor->avatar) : 'https://via.placeholder.com/50' }}" class="da-avatar mr-2" alt="{{ $doctor->name }}">
+                                                    <div>
+                                                        <strong>{{ $doctor->name }}</strong>
+                                                        <div class="text-muted font-12">ID: {{ $doctor->id }}</div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <a href="javascript: void(0);" class="btn btn-primary ml-2">
-                                                <i class="mdi mdi-autorenew"></i>
-                                            </a>
-                                            <a href="javascript: void(0);" class="btn btn-primary ml-1">
-                                                <i class="mdi mdi-filter-variant"></i>
-                                            </a>
-                                        </form>
-                                    </div>
-                                    <h4 class="page-title">Admin Dashboard - Online Doctor Appointment Booking and Hospital Handling System</h4>
-                                </div>
-                            </div>
+                                            </td>
+                                            <td>{{ $doctor->specialty }}</td>
+                                            <td><span class="status-pill">{{ $doctor->appointments_count }}</span></td>
+                                            <td>{{ $doctor->status }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="4" class="text-center text-muted">No doctor activity yet.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
-                        <!-- end page title -->
-
-                        <div class="row">
-                            <div class="col-xl-5 col-lg-6">
-
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="card widget-flat">
-                                            <div class="card-body">
-                                                <div class="float-right">
-                                                    <i class="mdi mdi-account-multiple widget-icon"></i>
-                                                </div>
-                                                <h5 class="text-muted font-weight-normal mt-0" title="Number of Customers">Appointments</h5>
-                                                <h3 class="mt-3 mb-3">{{$totalAppointments}}</h3>
-                                                <p class="mb-0 text-muted">
-                                                    <span class="text-success mr-2"><i class="mdi mdi-arrow-up-bold"></i> 5.27%</span>
-                                                    <span class="text-nowrap">Since last month</span>  
-                                                </p>
-                                            </div> <!-- end card-body-->
-                                        </div> <!-- end card-->
-                                    </div> <!-- end col-->
-
-                                    <div class="col-lg-6">
-                                        <div class="card widget-flat">
-                                            <div class="card-body">
-                                                <div class="float-right">
-                                                    <i class="mdi mdi-cart-plus widget-icon"></i>
-                                                </div>
-                                                <h5 class="text-muted font-weight-normal mt-0" title="Number of Orders">Doctors</h5>
-                                                <h3 class="mt-3 mb-3">{{$totalDoctorsCount}}</h3>
-                                                <p class="mb-0 text-muted">
-                                                    <span class="text-danger mr-2"><i class="mdi mdi-arrow-down-bold"></i> 1.08%</span>
-                                                    <span class="text-nowrap">Since last month</span>
-                                                </p>
-                                            </div> <!-- end card-body-->
-                                        </div> <!-- end card-->
-                                    </div> <!-- end col-->
-                                </div> <!-- end row -->
-
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="card widget-flat">
-                                            <div class="card-body">
-                                                <div class="float-right">
-                                                    <i class="mdi mdi-currency-usd widget-icon"></i>
-                                                </div>
-                                                <h5 class="text-muted font-weight-normal mt-0" title="Average Revenue">Total Pharmacy Amount</h5>
-                                                <h3 class="mt-3 mb-3">{{ number_format($totalPharmacyAmount, 2) }} TZS</h3>
-                                                <p class="mb-0 text-muted">
-                                                    <span class="text-danger mr-2"><i class="mdi mdi-arrow-down-bold"></i> 7.00%</span>
-                                                    <span class="text-nowrap">Since last month</span>
-                                                </p>
-                                            </div> <!-- end card-body-->
-                                        </div> <!-- end card-->
-                                    </div> <!-- end col-->
-
-                                    <div class="col-lg-6">
-                                        <div class="card widget-flat">
-                                            <div class="card-body">
-                                                <div class="float-right">
-                                                    <i class="mdi mdi-pulse widget-icon"></i>
-                                                </div>
-                                                <h5 class="text-muted font-weight-normal mt-0" title="Growth">Patients</h5>
-                                                <h3 class="mt-3 mb-3">{{$totalPatients}}</h3>
-                                                <p class="mb-0 text-muted">
-                                                    <span class="text-success mr-2"><i class="mdi mdi-arrow-up-bold"></i> 4.87%</span>
-                                                    <span class="text-nowrap">Since last month</span>
-                                                </p>
-                                            </div> <!-- end card-body-->
-                                        </div> <!-- end card-->
-                                    </div> <!-- end col-->
-                                </div> <!-- end row -->
-
-                            </div> <!-- end col -->
-
-                            <div class="col-xl-7  col-lg-6">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <div class="dropdown float-right">
-                                            <a href="#" class="dropdown-toggle arrow-none card-drop" data-toggle="dropdown" aria-expanded="false">
-                                                <i class="mdi mdi-dots-vertical"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right">
-                                                <!-- item-->
-                                                <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                                                <!-- item-->
-                                                <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                                                <!-- item-->
-                                                <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                                                <!-- item-->
-                                                <a href="javascript:void(0);" class="dropdown-item">Action</a>
-                                            </div>
-                                        </div>
-                                        <h4 class="header-title mb-3">Projections Vs Actuals</h4>
-
-                                        <div id="high-performing-product" class="apex-charts"
-                                            data-colors="#727cf5,#e3eaef"></div>
-                                            
-                                    </div> <!-- end card-body-->
-                                </div> <!-- end card-->
-
-                            </div> <!-- end col -->
-                        </div>
-                        <!-- end row -->
-
-                      
-                          
-
-                        <div class="row">
-                        <div class="col-xl-6 col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <a href="" class="btn btn-sm btn-link float-right mb-3">Export
-                    <i class="mdi mdi-download ml-1"></i>
-                </a>
-                <h4 class="header-title mt-2">Top Scheduled Doctors</h4>
-
-                <div class="table-responsive">
-                    <table class="table table-centered table-nowrap table-hover mb-0">
-                        <tbody>
-                            @foreach($topScheduledDoctors as $doctor)
-                            <tr>
-                                <td>
-                                        <img src="{{ $doctor->avatar ? asset('storage/' . $doctor->avatar) : 'https://via.placeholder.com/50' }}" alt="Doctor Picture" class="rounded-circle" width="50" height="50">
-                                    </td>
-                                <td>
-                                    <h5 class="font-14 my-1 font-weight-normal">{{ $doctor->name }}</h5>
-                                    <span class="text-muted font-13">ID: {{ $doctor->id }}</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 font-weight-normal">{{ $doctor->appointments_count }}</h5>
-                                    <span class="text-muted font-13">Appointments</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 font-weight-normal">{{ $doctor->specialty }}</h5>
-                                    <span class="text-muted font-13">Specialty</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 font-weight-normal">{{ $doctor->status }}</h5>
-                                    <span class="text-muted font-13">Status</span>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div> <!-- end table-responsive-->
-            </div> <!-- end card-body-->
-        </div> <!-- end card-->
-    </div> <!-- end col-->
-
-                            
-
-                            <div class="col-xl-3 col-lg-6 order-lg-1">
-    <div class="card">
-        <div class="card-body">
-            <div class="dropdown float-right">
-                <a href="#" class="dropdown-toggle arrow-none card-drop" data-toggle="dropdown" aria-expanded="false">
-                    <i class="mdi mdi-dots-vertical"></i>
-                </a>
-            </div>
-            <h4 class="header-title mb-2">Recent Appointments</h4>
-
-            <div data-simplebar style="max-height: 424px;">
-                <div class="timeline-alt pb-0">
-                    @foreach($appointments as $appointment)
-                        <div class="timeline-item">
-                            <div class="timeline-icon-wrapper bg-{{ $appointment->status == 'completed' ? 'success' : 'warning' }}-lighten">
-                                <i class="mdi mdi-calendar-check text-{{ $appointment->status == 'completed' ? 'success' : 'warning' }}"></i>
-                            </div>
-                            <div class="timeline-item-info">
-                                <div class="d-flex align-items-center">
-                                    <img src="{{ $appointment->doctor->avatar ? asset('storage/' . $appointment->doctor->avatar) : 'https://via.placeholder.com/50' }}" class="rounded-circle avatar-sm mr-3" alt="{{ $appointment->doctor->name }}" width="50" height="50">
-                                    <div>
-                                        <a href="#" class="text-primary font-weight-bold mb-1 d-block">{{ $appointment->doctor->name }}</a>
-                                        <small>Appointment with {{ optional($appointment->patient)->name ?? 'Unknown Patient' }}</small>
-                                    </div>
-                                </div>
-                                <p class="mb-0 pb-2">
-                                    <small class="text-muted">{{ $appointment->created_at->diffForHumans() }}</small>
-                                </p>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div> <!-- end slimscroll -->
-        </div> <!-- end card-body -->
-    </div> <!-- end card-->
-</div>
-<div class="col-xl-3 col-lg-6 order-lg-1">
-    <div class="card card-hover-shadow">
-        <div class="card-body">
-            <div class="dropdown float-right">
-                <a href="#" class="dropdown-toggle arrow-none card-drop" data-toggle="dropdown" aria-expanded="false">
-                    <i class="mdi mdi-dots-vertical"></i>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right">
-                    <a href="javascript:void(0);" class="dropdown-item">Sales Report</a>
-                    <a href="javascript:void(0);" class="dropdown-item">Export Report</a>
-                    <a href="javascript:void(0);" class="dropdown-item">Profit</a>
-                    <a href="javascript:void(0);" class="dropdown-item">Action</a>
+                    </div>
                 </div>
             </div>
-            <h4 class="header-title mb-2">Recent Pharmacies</h4>
 
-            <div data-simplebar style="max-height: 424px;">
-                <div class="timeline-alt pb-0">
-                    @foreach($pharmacies as $pharmacy)
-                        <div class="timeline-item">
-                            <div class="timeline-icon-wrapper bg-{{ $pharmacy->amount > 100 ? 'success' : 'warning' }}-lighten">
-                                <i class="mdi mdi-medical-bag text-{{ $pharmacy->amount > 100 ? 'success' : 'warning' }}"></i>
-                            </div>
-                            <div class="timeline-item-info">
-                                <div class="d-flex align-items-center">
-                                    <img src="{{ $pharmacy->patient->avatar ? asset('storage/' . $pharmacy->patient->avatar) : 'https://via.placeholder.com/50' }}" class="rounded-circle avatar-sm mr-3" alt="{{ $pharmacy->patient->name }}" width="50" height="50">
-                                    <div>
-                                        <a href="#" class="text-primary font-weight-bold mb-1 d-block">{{ $pharmacy->patient->name }}</a>
-                                        <small>Medicine: {{ $pharmacy->medicine }}</small>
+            <div class="col-xl-5">
+                <div class="card timeline-card">
+                    <div class="card-body">
+                        <h4 class="header-title mb-3">Recent Appointments</h4>
+                        @forelse($latestAppointments as $appointment)
+                            <div class="da-timeline-item">
+                                <span class="metric-icon metric-blue" style="width:40px;height:40px;"><i class="mdi mdi-calendar-check"></i></span>
+                                <div>
+                                    <strong>{{ optional($appointment->doctor)->name ?? 'Unassigned Doctor' }}</strong>
+                                    <div class="text-muted">
+                                        {{ optional($appointment->patient)->name ?? 'Unknown Patient' }} &middot; {{ $appointment->status ?? 'pending' }}
                                     </div>
-                                </div>
-                                <p class="mb-0 pb-2">
-                                    <span class="text-muted d-block">Amount: <span class="font-weight-bold text-{{ $pharmacy->amount > 100 ? 'success' : 'warning' }}">{{ $pharmacy->amount }}</span></span>
-                                    <small class="text-muted">{{ $pharmacy->created_at->diffForHumans() }}</small>
-                                </p>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div> <!-- end slimscroll -->
-        </div> <!-- end card-body -->
-    </div> <!-- end card-->
-</div>
-
-<style>
-.card {
-    border-radius: 15px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    background: white;
-}
-.card-body {
-    padding: 1.5rem;
-    border-radius: 15px;
-}
-.header-title {
-    font-size: 1.2rem;
-    color: #343a40;
-    font-weight: bold;
-    margin-bottom: 1rem;
-}
-.timeline-alt {
-    position: relative;
-    padding-left: 20px;
-    margin-bottom: 1.5rem;
-}
-.timeline-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    position: relative;
-    padding-left: 40px;
-}
-.timeline-item::before {
-    content: '';
-    position: absolute;
-    left: 18px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: #dee2e6;
-}
-.timeline-icon-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    position: absolute;
-    left: 0;
-}
-.bg-success-lighten {
-    background-color: #d4edda;
-}
-.bg-warning-lighten {
-    background-color: #fff3cd;
-}
-.avatar-sm {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-}
-.timeline-item-info {
-    margin-left: 1rem;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-}
-.timeline-item-info a {
-    color: #007bff;
-    text-decoration: none;
-}
-.timeline-item-info a:hover {
-    text-decoration: underline;
-}
-.text-primary {
-    color: #007bff !important;
-}
-</style>
-
-
-<style>
-    .timeline-icon-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-    }
-    .avatar-sm {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-    }
-    .timeline-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1.5rem;
-    }
-    .timeline-item-info {
-        margin-left: 1rem;
-    }
-    .timeline-icon-wrapper.bg-success-lighten {
-        background-color: #d4edda;
-    }
-    .timeline-icon-wrapper.bg-warning-lighten {
-        background-color: #fff3cd;
-    }
-</style>
-
-                            <!-- end col -->
-
-                        </div>
-
-
-                        <div class="row">
-    <div class="col-xl-6 col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <a href="" class="btn btn-sm btn-link float-right mb-3">Export
-                    <i class="mdi mdi-download ml-1"></i>
-                </a>
-                <h4 class="header-title mt-2">Top Scheduled Doctors</h4>
-
-                <div class="table-responsive">
-                    <table class="table table-centered table-nowrap table-hover mb-0">
-                        <tbody>
-                            @foreach($topScheduledDoctors as $doctor)
-                            <tr>
-                                <td>
-                                    <img src="{{ $doctor->avatar ? asset('storage/' . $doctor->avatar) : 'https://via.placeholder.com/50' }}" alt="Doctor Picture" class="rounded-circle" width="50" height="50">
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 font-weight-normal">{{ $doctor->name }}</h5>
-                                    <span class="text-muted font-13">ID: {{ $doctor->id }}</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 font-weight-normal">{{ $doctor->appointments_count }}</h5>
-                                    <span class="text-muted font-13">Appointments</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 font-weight-normal">{{ $doctor->specialty }}</h5>
-                                    <span class="text-muted font-13">Specialty</span>
-                                </td>
-                                <td>
-                                    <h5 class="font-14 my-1 font-weight-normal">{{ $doctor->status }}</h5>
-                                    <span class="text-muted font-13">Status</span>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div> <!-- end table-responsive -->
-            </div> <!-- end card-body -->
-        </div> <!-- end card -->
-    </div> <!-- end col -->
-
-    <div class="col-xl-6 col-lg-12">
-    <div class="card">
-        <div class="card-body">
-            <a href="" class="btn btn-sm btn-link float-right mb-3">Export
-                <i class="mdi mdi-download ml-1"></i>
-            </a>
-            <h4 class="header-title mt-2">Top Patients</h4>
-
-            <div class="table-responsive">
-                <table class="table table-centered table-nowrap table-hover mb-0">
-                    <tbody>
-                        @foreach($topPatients as $patient)
-                        <tr>
-                            <td>
-                                <img src="{{ $patient['avatar'] }}" alt="Patient Picture" class="rounded-circle" width="50" height="50">
-                            </td>
-                            <td>
-                                <h5 class="font-14 my-1 font-weight-normal">{{ $patient['name'] }}</h5>
-                                <span class="text-muted font-13">ID: {{ $patient['id'] }}</span>
-                            </td>
-                            <td>
-                                <h5 class="font-14 my-1 font-weight-normal">{{ $patient['appointments_count'] }}</h5>
-                                <span class="text-muted font-13">Appointments</span>
-                            </td>
-                            <td>
-                                <h5 class="font-14 my-1 font-weight-normal">{{ $patient['total_pharmacy_amount'] }}</h5>
-                                <span class="text-muted font-13">Total Pharmacy Amount</span>
-                            </td>
-                            <td>
-                                <h5 class="font-14 my-1 font-weight-normal">{{ $patient['status'] }}</h5>
-                                <span class="text-muted font-13">Status</span>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div> <!-- end table-responsive -->
-        </div> <!-- end card-body -->
-    </div> <!-- end card -->
-</div> <!-- end col -->
-
-</div> <!-- end row -->
-
-
-<style>
-.card {
-    border-radius: 15px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    background: white;
-}
-.card-body {
-    padding: 1.5rem;
-    border-radius: 15px;
-}
-.header-title {
-    font-size: 1.2rem;
-    color: #343a40;
-    font-weight: bold;
-    margin-bottom: 1rem;
-}
-.timeline-alt {
-    position: relative;
-    padding-left: 20px;
-    margin-bottom: 1.5rem;
-}
-.timeline-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    position: relative;
-    padding-left: 40px;
-}
-.timeline-item::before {
-    content: '';
-    position: absolute;
-    left: 18px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: #dee2e6;
-}
-.timeline-icon-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    position: absolute;
-    left: 0;
-}
-.bg-success-lighten {
-    background-color: #d4edda;
-}
-.bg-warning-lighten {
-    background-color: #fff3cd;
-}
-.avatar-sm {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-}
-.timeline-item-info {
-    margin-left: 1rem;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-}
-.timeline-item-info a {
-    color: #007bff;
-    text-decoration: none;
-}
-.timeline-item-info a:hover {
-    text-decoration: underline;
-}
-.text-primary {
-    color: #007bff !important;
-}
-</style>
-
-
-<style>
-    .timeline-icon-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-    }
-    .avatar-sm {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-    }
-    .timeline-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1.5rem;
-    }
-    .timeline-item-info {
-        margin-left: 1rem;
-    }
-    .timeline-icon-wrapper.bg-success-lighten {
-        background-color: #d4edda;
-    }
-    .timeline-icon-wrapper.bg-warning-lighten {
-        background-color: #fff3cd;
-    }
-    
-</style>
-
-                            <!-- end col -->
-
- </div>
- @endif
-
- @if(auth()->user()->hasRole('patient'))
- <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <form class="form-inline">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input type="text" class="form-control form-control-light" id="dash-daterange">
-                                <div class="input-group-append">
-                                    <span class="input-group-text bg-primary border-primary text-white">
-                                        <i class="mdi mdi-calendar-range font-13"></i>
-                                    </span>
+                                    <small class="text-muted">{{ optional($appointment->created_at)->diffForHumans() }}</small>
                                 </div>
                             </div>
-                        </div>
-                        <a href="javascript: void(0);" class="btn btn-primary ml-2">
-                            <i class="mdi mdi-autorenew"></i>
-                        </a>
-                        <a href="javascript: void(0);" class="btn btn-primary ml-1">
-                            <i class="mdi mdi-filter-variant"></i>
-                        </a>
-                    </form>
+                        @empty
+                            <p class="text-muted mb-0">No appointments recorded yet.</p>
+                        @endforelse
+                    </div>
                 </div>
-                <h4 class="page-title">Patient Dashboard - Online Doctor Appointment Booking and Hospital Handling System</h4>
             </div>
         </div>
-    </div>
-    <!-- end page title -->
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="header-title mb-3">Recent Appointments</h4>
-
-                    <div data-simplebar style="max-height: 424px;">
-                        <div class="timeline-alt pb-0">
-                            @foreach($appointments as $appointment)
-                                <div class="timeline-item">
-                                    <div class="timeline-icon-wrapper bg-{{ $appointment->status == 'completed' ? 'success' : 'warning' }}-lighten">
-                                        <i class="mdi mdi-calendar-check text-{{ $appointment->status == 'completed' ? 'success' : 'warning' }}"></i>
-                                    </div>
-                                    <div class="timeline-item-info">
-                                        <div class="d-flex align-items-center">
-                                            <img src="{{ $appointment->doctor->avatar ? asset('storage/' . $appointment->doctor->avatar) : 'https://via.placeholder.com/50' }}" class="rounded-circle avatar-sm mr-3" alt="{{ $appointment->doctor->name }}" width="50" height="50">
-                                            <div>
-                                                <a href="#" class="text-primary font-weight-bold mb-1 d-block">{{ $appointment->doctor->name }}</a>
-                                                <small>Appointment with {{ optional($appointment->patient)->name ?? 'Unknown Patient' }}</small>
-
-                                            </div>
-                                        </div>
-                                        <p class="mb-0 pb-2">
-                                            <small class="text-muted">{{ $appointment->created_at->diffForHumans() }}</small>
-                                        </p>
-                                    </div>
-                                </div>
-                            @endforeach
+        <div class="row">
+            <div class="col-xl-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="header-title mb-3">Top Patients</h4>
+                        <div class="table-responsive">
+                            <table class="table table-centered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Patient</th>
+                                        <th>Appointments</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($topPatients as $patient)
+                                        <tr>
+                                            <td>
+                                                <strong>{{ $patient->name }}</strong>
+                                                <div class="text-muted font-12">ID: {{ $patient->id }}</div>
+                                            </td>
+                                            <td><span class="status-pill">{{ $patient->appointments_count }}</span></td>
+                                            <td>{{ $patient->status }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="3" class="text-center text-muted">No patient activity yet.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
-                    </div> <!-- end slimscroll -->
-                </div> <!-- end card-body -->
-            </div> <!-- end card -->
-        </div> <!-- end col -->
-    </div> <!-- end row -->
+                    </div>
+                </div>
+            </div>
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="header-title mb-3">Recent Pharmacies</h4>
-
-                    <div data-simplebar style="max-height: 424px;">
-                        <div class="timeline-alt pb-0">
-                            @foreach($pharmacies as $pharmacy)
-                                <div class="timeline-item">
-                                    <div class="timeline-icon-wrapper bg-{{ $pharmacy->amount > 100 ? 'success' : 'warning' }}-lighten">
-                                        <i class="mdi mdi-medical-bag text-{{ $pharmacy->amount > 100 ? 'success' : 'warning' }}"></i>
-                                    </div>
-                                    <div class="timeline-item-info">
-                                        <div class="d-flex align-items-center">
-                                            <img src="{{ $pharmacy->patient->avatar ? asset('storage/' . $pharmacy->patient->avatar) : 'https://via.placeholder.com/50' }}" class="rounded-circle avatar-sm mr-3" alt="{{ $pharmacy->patient->name }}" width="50" height="50">
-                                            <div>
-                                                <a href="#" class="text-primary font-weight-bold mb-1 d-block">{{ $pharmacy->patient->name }}</a>
-                                                <small>Medicine: {{ $pharmacy->medicine }}</small>
-                                            </div>
-                                        </div>
-                                        <p class="mb-0 pb-2">
-                                            <span class="text-muted d-block">Amount: <span class="font-weight-bold text-{{ $pharmacy->amount > 100 ? 'success' : 'warning' }}">{{ $pharmacy->amount }}</span></span>
-                                            <small class="text-muted">{{ $pharmacy->created_at->diffForHumans() }}</small>
-                                        </p>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div> <!-- end slimscroll -->
-                </div> <!-- end card-body -->
-            </div> <!-- end card -->
-        </div> <!-- end col -->
-    </div> <!-- end row -->
-    @endif
-    @if(auth()->user()->hasRole('doctor'))
-    <div class="row">
-        <div class="col-12">
-            <div class="page-title-box">
-                <div class="page-title-right">
-                    <form class="form-inline">
-                        <div class="form-group">
-                            <div class="input-group">
-                                <input type="text" class="form-control form-control-light" id="dash-daterange">
-                                <div class="input-group-append">
-                                    <span class="input-group-text bg-primary border-primary text-white">
-                                        <i class="mdi mdi-calendar-range font-13"></i>
-                                    </span>
+            <div class="col-xl-6">
+                <div class="card timeline-card">
+                    <div class="card-body">
+                        <h4 class="header-title mb-3">Recent Pharmacy Activity</h4>
+                        @forelse($latestPharmacies as $pharmacy)
+                            <div class="da-timeline-item">
+                                <span class="metric-icon metric-green" style="width:40px;height:40px;"><i class="mdi mdi-pill"></i></span>
+                                <div>
+                                    <strong>{{ optional($pharmacy->patient)->name ?? 'Unknown Patient' }}</strong>
+                                    <div class="text-muted">{{ $pharmacy->medicine }} &middot; {{ number_format($pharmacy->amount, 2) }} TZS</div>
+                                    <small class="text-muted">{{ optional($pharmacy->created_at)->diffForHumans() }}</small>
                                 </div>
                             </div>
-                        </div>
-                        <a href="javascript: void(0);" class="btn btn-primary ml-2">
-                            <i class="mdi mdi-autorenew"></i>
-                        </a>
-                        <a href="javascript: void(0);" class="btn btn-primary ml-1">
-                            <i class="mdi mdi-filter-variant"></i>
-                        </a>
-                    </form>
+                        @empty
+                            <p class="text-muted mb-0">No pharmacy activity recorded yet.</p>
+                        @endforelse
+                    </div>
                 </div>
-                <h4 class="page-title">Doctor Dashboard - Online Doctor Appointment Booking and Hospital Handling System</h4>
             </div>
         </div>
-    </div>
-    <!-- end page title -->
-
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="header-title mb-3">Upcoming Appointments</h4>
-
-                    <div data-simplebar style="max-height: 424px;">
-                        <div class="timeline-alt pb-0">
-                        @foreach ($recentAppointments as $appointment)
-                            <div class="timeline-item-info">
-                                <div class="d-flex align-items-center">
-                                    @php
-                                        $doctorAvatar = $appointment->doctor->avatar ? asset('storage/' . $appointment->doctor->avatar) : 'https://via.placeholder.com/50';
-                                        $doctorName = $appointment->doctor ? $appointment->doctor->name : 'Unknown Doctor';
-                                        $patientName = $appointment->patient ? $appointment->patient->name : 'Unknown Patient';
-                                    @endphp
-                                    <img src="{{ $doctorAvatar }}" class="rounded-circle avatar-sm mr-3" alt="{{ $doctorName }}" width="50" height="50">
-                                    <div>
-                                        <a href="#" class="text-primary font-weight-bold mb-1 d-block">{{ $doctorName }}</a>
-                                        <small>Appointment with {{ optional($appointment->patient)->name ?? 'Unknown Patient' }}</small>
-                                    </div>
-                                </div>
-                                <p class="mb-0 pb-2">
-                                    <small class="text-muted">{{ $appointment->created_at->diffForHumans() }}</small>
-                                </p>
-                            </div>
-                        @endforeach
-
-                        </div>
-                    </div> <!-- end slimscroll -->
-                </div> <!-- end card-body -->
-            </div> <!-- end card -->
-        </div> <!-- end col -->
-    </div> <!-- end row -->
     @endif
 
- @endsection
-                     
+    @if(auth()->user()->hasRole('patient') || auth()->user()->hasRole('doctor'))
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="card timeline-card">
+                    <div class="card-body">
+                        <h4 class="header-title mb-3">{{ auth()->user()->hasRole('doctor') ? 'Upcoming Appointments' : 'Recent Appointments' }}</h4>
+                        @forelse($latestAppointments as $appointment)
+                            <div class="da-timeline-item">
+                                <span class="metric-icon metric-blue" style="width:40px;height:40px;"><i class="mdi mdi-calendar-check"></i></span>
+                                <div>
+                                    <strong>{{ optional($appointment->doctor)->name ?? 'Assigned Doctor' }}</strong>
+                                    <div class="text-muted">Appointment with {{ optional($appointment->patient)->name ?? 'Unknown Patient' }}</div>
+                                    <small class="text-muted">{{ optional($appointment->created_at)->diffForHumans() }}</small>
+                                </div>
+                            </div>
+                        @empty
+                            <p class="text-muted mb-0">No appointments available.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+            @if(auth()->user()->hasRole('patient'))
+                <div class="col-lg-5">
+                    <div class="card timeline-card">
+                        <div class="card-body">
+                            <h4 class="header-title mb-3">Recent Pharmacies</h4>
+                            @forelse($latestPharmacies as $pharmacy)
+                                <div class="da-timeline-item">
+                                    <span class="metric-icon metric-green" style="width:40px;height:40px;"><i class="mdi mdi-medical-bag"></i></span>
+                                    <div>
+                                        <strong>{{ $pharmacy->medicine }}</strong>
+                                        <div class="text-muted">{{ number_format($pharmacy->amount, 2) }} TZS</div>
+                                        <small class="text-muted">{{ optional($pharmacy->created_at)->diffForHumans() }}</small>
+                                    </div>
+                                </div>
+                            @empty
+                                <p class="text-muted mb-0">No pharmacy activity available.</p>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
+    @endif
+</div>
+@endsection

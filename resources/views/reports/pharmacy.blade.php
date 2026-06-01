@@ -1,26 +1,28 @@
 @extends('layouts.app')
 
 @section('main')
-<!-- Start Page Title -->
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-            <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-                    <li class="breadcrumb-item active">Pharmacy Report</li>
-                </ol>
+<div class="module-page reports-page">
+    <div class="module-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="module-kicker">Reports</div>
+                <h2>Pharmacy Report</h2>
+                <p class="mb-0" style="color: rgba(255,255,255,.82);">Review medicine movement, total amounts, doctor prescriptions, and pharmacy collection trends.</p>
             </div>
-            <h4 class="page-title">Pharmacy Report</h4>
+            <div class="col-lg-5">
+                <div class="module-actions">
+                    <a href="{{ route('reports.appointments') }}" class="btn"><i class="mdi mdi-calendar-clock mr-1"></i> Appointments</a>
+                    <a href="{{ route('reports.doctors') }}" class="btn"><i class="mdi mdi-doctor mr-1"></i> Doctors</a>
+                    <a href="{{ route('reports.patients') }}" class="btn"><i class="mdi mdi-account-group mr-1"></i> Patients</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<!-- End Page Title -->
 
 <div class="row justify-content-center">
     <!-- Filter Card -->
     <div class="col-lg-8">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <h4 class="header-title mb-0">Filter by Date Range</h4>
@@ -41,7 +43,7 @@
 <div class="row">
     <!-- Pharmacy Report -->
     <div class="col-xl-6 col-lg-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 <h4 class="header-title mb-3">Pharmacy Report ({{ ucfirst($dateRange) }})</h4>
                 <div class="table-responsive">
@@ -77,12 +79,12 @@
 
     <!-- Medicine Summary -->
     <div class="col-xl-6 col-lg-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 <h4 class="header-title mb-3">Medicine Summary</h4>
                 <div class="d-flex flex-column">
                     @foreach($medicineSummary as $medicine)
-                        <div class="bg-light p-3 mb-2 rounded">
+                        <div class="report-stat mb-2">
                             <h5 class="mb-1">{{ $medicine->medicine }}</h5>
                             <p class="mb-0 font-weight-bold">Total Amount: {{ number_format($medicine->total_amount, 2) }}</p>
                         </div>
@@ -94,12 +96,12 @@
 
     <!-- Doctor Prescriptions -->
     <div class="col-xl-6 col-lg-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 <h4 class="header-title mb-3">Doctor Prescriptions</h4>
                 <div class="d-flex flex-column">
                     @foreach($doctorPrescriptions as $doctor)
-                        <div class="bg-light p-3 mb-2 rounded">
+                        <div class="report-stat mb-2">
                             <h5 class="mb-1">{{ $doctor->doctor->name }}</h5>
                             <p class="mb-0 font-weight-bold">{{ $doctor->prescription_count }} prescriptions</p>
                         </div>
@@ -111,7 +113,7 @@
 
     <!-- Summary Card -->
     <div class="col-xl-6 col-lg-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 <h4 class="header-title mb-3">Pharmacy Summary</h4>
                 <div class="table-responsive">
@@ -144,4 +146,5 @@
     </div> <!-- End Col -->
 </div>
 <!-- End Row -->
+</div>
 @endsection

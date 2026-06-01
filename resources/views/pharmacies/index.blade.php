@@ -2,45 +2,34 @@
 
 @section('main')
 
-<!-- start page title -->
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-            <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard')}}">Home</a></li>
-                    <li class="breadcrumb-item active">Hospital Pharmacy</li>
-                </ol>
+<div class="module-page pharmacy-page">
+    <div class="module-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="module-kicker">Medication Flow</div>
+                <h2>Hospital Pharmacy</h2>
+                <p class="mb-0" style="color: rgba(255,255,255,.82);">Track medicines, patient billing, prescribing doctors, and transaction details with room for export workflows.</p>
             </div>
-            <h4 class="page-title">Hospital Pharmacy</h4>
+            <div class="col-lg-5">
+                <div class="module-actions">
+                    <a href="{{ route('pharmacies.create') }}" class="btn"><i class="mdi mdi-medical-bag mr-1"></i> Add Pharmacy</a>
+                    <button id="download-pdf" type="button" class="btn"><i class="mdi mdi-file-pdf-box mr-1"></i> PDF</button>
+                    <button id="download-excel" type="button" class="btn"><i class="mdi mdi-file-excel-box mr-1"></i> Excel</button>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<!-- end page title -->
 
 <div class="row">
     <div class="col-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
-                <div class="row mb-2">
-                    <div class="col-lg-8">
-                        <form class="form-inline">
-                            <div class="form-group mb-2">
-                                <label for="inputPassword2" class="sr-only">Search</label>
-                                <input type="search" class="form-control" id="inputPassword2" placeholder="Search...">
-                            </div>
-                            
-                        </form>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="text-lg-right">
-                            <a href="{{ route('pharmacies.create') }}" class="btn btn-danger mb-2 mr-2">
-                                <i class="mdi mdi-basket mr-1"></i> Add New Hospital Pharmacy
-                            </a>
-                            <button id="download-pdf" type="button" class="btn btn-light mb-2">Export PDF</button>
-                            <button id="download-excel" type="button" class="btn btn-light mb-2">Export Excel</button>
-                        </div>
-                    </div>
+                <div class="module-toolbar">
+                    <h4 class="header-title mb-0">Pharmacy Transactions</h4>
+                    <form class="module-search">
+                        <input type="search" class="form-control" id="inputPassword2" placeholder="Search medicines or patients...">
+                        <button type="button" class="btn btn-primary"><i class="mdi mdi-magnify mr-1"></i> Search</button>
+                    </form>
                 </div>
 
                 <div class="table-responsive">
@@ -77,7 +66,7 @@
                                 <td>{{ $pharmacy->contact }}</td>
                                 <td>{{ $pharmacy->medicine}}</td>
                                 <td>{{ $pharmacy->description }}</td>
-                                <td>{{ number_format($pharmacy->amount, 2) }} TZS</td>
+                                <td><span class="status-pill">{{ number_format($pharmacy->amount, 2) }} TZS</span></td>
                                 <td>Dr. {{ $pharmacy->doctor->name }}</td>
                                 <td>
                                         <div class="btn-group">
@@ -99,5 +88,6 @@
     </div> <!-- end col -->
 </div>
 <!-- end row --> 
+</div>
 
 @endsection

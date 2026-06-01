@@ -1,26 +1,37 @@
 @extends('layouts.app')
 
 @section('main')
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-            <h4 class="page-title">Roles</h4>
+<div class="module-page configuration-page">
+    <div class="module-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="module-kicker">System Configuration</div>
+                <h2>Roles and Permissions</h2>
+                <p class="mb-0" style="color: rgba(255,255,255,.82);">Shape who can view, create, edit, delete, and report across the hospital system.</p>
+            </div>
+            <div class="col-lg-5">
+                <div class="module-actions">
+                    <a href="{{ route('roles.create') }}" class="btn"><i class="mdi mdi-shield-plus mr-1"></i> Create Role</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
 <div class="row">
     <div class="col-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 @if(session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
-                <a href="{{ route('roles.create') }}" class="btn btn-primary mb-3">Create New Role</a>
-              
+                <div class="module-toolbar">
+                    <h4 class="header-title mb-0">Access Matrix</h4>
+                    <span class="text-muted">{{ $roles->count() }} configured roles</span>
+                </div>
 
-                <table class="table table-striped">
+                <div class="table-responsive">
+                <table class="table table-hover table-centered">
                     <thead>
                         <tr>
                             <th>#</th>
@@ -36,7 +47,7 @@
                                 <td>{{ $role->name }}</td>
                                 <td>
                                     @foreach($role->permissions as $permission)
-                                        {{ $permission->name }}<br>
+                                        <span class="permission-pill">{{ $permission->name }}</span>
                                     @endforeach
                                 </td>
                                 <td>
@@ -51,8 +62,10 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

@@ -1,44 +1,34 @@
 @extends('layouts.app')
 
 @section('main')
-<!-- start page title -->
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-            <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-                    <li class="breadcrumb-item active">Doctors</li>
-                </ol>
+<div class="module-page doctors-page">
+    <div class="module-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="module-kicker">Care Team</div>
+                <h2>Doctors</h2>
+                <p class="mb-0" style="color: rgba(255,255,255,.82);">Maintain specialists, contacts, qualifications, and working status with a compact clinical directory.</p>
             </div>
-            <h4 class="page-title">Doctors</h4>
+            <div class="col-lg-5">
+                <div class="module-actions">
+                    <a href="{{ route('doctors.create') }}" class="btn"><i class="mdi mdi-doctor mr-1"></i> Add Doctor</a>
+                    <button type="button" class="btn" id="download-pdf"><i class="mdi mdi-file-pdf-box mr-1"></i> PDF</button>
+                    <button type="button" class="btn" id="download-excel"><i class="mdi mdi-file-excel-box mr-1"></i> Excel</button>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<!-- end page title -->
 
 <div class="row">
     <div class="col-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
-                <div class="row mb-2">
-                    <div class="col-lg-8">
-                        <form class="form-inline" method="GET" action="{{ route('doctors.index') }}">
-                            <div class="form-group mb-2">
-                                <label for="search" class="sr-only">Search</label>
-                                <input type="search" name="search" class="form-control" id="search" placeholder="Search..." value="{{ request()->query('search') }}">
-                            </div>
-                            <button type="submit" class="btn btn-primary mb-2 ml-2">Search</button>
-                        </form>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="text-lg-right">
-                            <a href="{{ route('doctors.create') }}" class="btn btn-danger mb-2 mr-2">
-                                <i class="mdi mdi-basket mr-1"></i> Add New Doctor
-                            </a>
-                            <button type="button" class="btn btn-light mb-2">Export</button>
-                        </div>
-                    </div><!-- end col-->
+                <div class="module-toolbar">
+                    <h4 class="header-title mb-0">Doctor Directory</h4>
+                    <form class="module-search" method="GET" action="{{ route('doctors.index') }}">
+                        <input type="search" name="search" class="form-control" id="search" placeholder="Search doctors..." value="{{ request()->query('search') }}">
+                        <button type="submit" class="btn btn-primary"><i class="mdi mdi-magnify mr-1"></i> Search</button>
+                    </form>
                 </div>
 
                 <div class="table-responsive">
@@ -70,7 +60,7 @@
                                     <td>{{ $doctor->address }}</td>
                                     <td>{{ $doctor->qualification }}</td>
                                     <td>{{ $doctor->specialty }}</td>
-                                    <td>{{ $doctor->status }}</td>
+                                    <td><span class="status-pill">{{ $doctor->status }}</span></td>
                                     <td>
                                         <div class="btn-group">
                                             <a href="{{ route('doctors.edit', ['doctor' => $doctor->id]) }}" class="dropdown-item">
@@ -98,6 +88,7 @@
     </div> <!-- end col -->
 </div>
 <!-- end row -->
+</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

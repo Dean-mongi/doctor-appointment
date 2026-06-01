@@ -15,7 +15,7 @@ use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\AppointmentsController;
 use App\Http\Controllers\RecentActivityController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\PharmacistController;
+use App\Http\Controllers\PharmacistsController;
 
 
 // // Public Routes
@@ -76,7 +76,7 @@ Route::middleware([
         Route::post('/', [PatientsController::class, 'store'])->name('patients.store');
         Route::get('/{patient}/edit', [PatientsController::class, 'edit'])->name('patients.edit');
         Route::put('/{patient}', [PatientsController::class, 'update'])->name('patients.update');
-        Route::get('/patients/{patient}', 'PatientsController@show')->name('patients.show');
+        Route::get('/patients/{patient}', [PatientsController::class, 'show'])->name('patients.show');
         Route::delete('/{patient}', [PatientsController::class, 'destroy'])->name('patients.destroy');
 
     });
@@ -94,12 +94,12 @@ Route::middleware([
     Route::get('/notifications', [DashboardController::class, 'notifications'])->name('notifications.index');
    
    Route::prefix('pharmacists')->group(function () {
-    Route::get('/', [PharmacistController::class, 'index'])->name('pharmacists.index');
-    Route::get('/create', [PharmacistController::class, 'create'])->name('pharmacists.create');
-    Route::post('/', [PharmacistController::class, 'store'])->name('pharmacists.store');
-    Route::get('/{pharmacist}/edit', [PharmacistController::class, 'edit'])->name('pharmacists.edit');
-    Route::put('/{pharmacist}', [PharmacistController::class, 'update'])->name('pharmacists.update');
-    Route::delete('/{pharmacist}', [PharmacistController::class, 'destroy'])->name('pharmacists.destroy');
+    Route::get('/', [PharmacistsController::class, 'index'])->name('pharmacists.index');
+    Route::get('/create', [PharmacistsController::class, 'create'])->name('pharmacists.create');
+    Route::post('/', [PharmacistsController::class, 'store'])->name('pharmacists.store');
+    Route::get('/{pharmacist}/edit', [PharmacistsController::class, 'edit'])->name('pharmacists.edit');
+    Route::put('/{pharmacist}', [PharmacistsController::class, 'update'])->name('pharmacists.update');
+    Route::delete('/{pharmacist}', [PharmacistsController::class, 'destroy'])->name('pharmacists.destroy');
 });
   
 

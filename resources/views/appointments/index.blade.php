@@ -1,46 +1,35 @@
 @extends('layouts.app')
 @section('main')
 
-<!-- start page title -->
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-            <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard')}}">Home</a></li>
-                    <li class="breadcrumb-item active">Appointments</li>
-                </ol>
+<div class="module-page appointments-page">
+    <div class="module-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="module-kicker">Scheduling Desk</div>
+                <h2>Appointments</h2>
+                <p class="mb-0" style="color: rgba(255,255,255,.82);">Coordinate patient visits, doctor assignments, status, and timing from a clear responsive workspace.</p>
             </div>
-            <h4 class="page-title">Appointments</h4>
+            <div class="col-lg-5">
+                <div class="module-actions">
+                    @can('create', App\Models\Appointment::class)
+                        <a href="{{ route('appointments.create') }}" class="btn"><i class="mdi mdi-calendar-plus mr-1"></i> Add Appointment</a>
+                    @endcan
+                    <button type="button" class="btn"><i class="mdi mdi-download mr-1"></i> Export</button>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<!-- end page title -->
 
 <div class="row">
     <div class="col-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
-                <div class="row mb-2">
-                    <div class="col-lg-8">
-                        <form class="form-inline" method="GET" action="{{ route('appointments.index') }}">
-                            <div class="form-group mb-2">
-                                <label for="search" class="sr-only">Search</label>
-                                <input type="search" name="search" class="form-control" id="search" placeholder="Search..." value="{{ request()->query('search') }}">
-                            </div>
-                            <button type="submit" class="btn btn-primary mb-2 ml-2">Search</button>
-                        </form>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="text-lg-right">
-                            @can('create', App\Models\Appointment::class)
-                            <a href="{{ route('appointments.create') }}" class="btn btn-danger mb-2 mr-2">
-                                <i class="mdi mdi-basket mr-1"></i> Add New Appointment
-                            </a>
-                            @endcan
-                            <button type="button" class="btn btn-light mb-2">Export</button>
-                        </div>
-                    </div><!-- end col-->
+                <div class="module-toolbar">
+                    <h4 class="header-title mb-0">Appointment Queue</h4>
+                    <form class="module-search" method="GET" action="{{ route('appointments.index') }}">
+                        <input type="search" name="search" class="form-control" id="search" placeholder="Search appointments..." value="{{ request()->query('search') }}">
+                        <button type="submit" class="btn btn-primary"><i class="mdi mdi-magnify mr-1"></i> Search</button>
+                    </form>
                 </div>
 
                 <div class="table-responsive">
@@ -77,7 +66,7 @@
                     <td>{{ $appointment->reason }}</td>
                     <td>{{ $appointment->date }}</td>
                     <td>{{ $appointment->time }}</td>
-                    <td>{{ $appointment->status }}</td>
+                    <td><span class="status-pill">{{ $appointment->status }}</span></td>
                     <td>{{ $appointment->doctor ? $appointment->doctor->name : 'N/A' }}</td>
                     <td>
                         <div class="btn-group">
@@ -121,6 +110,7 @@
             </div> <!-- end card-body-->
         </div> <!-- end card-->
     </div> <!-- end col -->
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

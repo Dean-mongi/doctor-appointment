@@ -1,25 +1,27 @@
 @extends('layouts.app')
 
 @section('main')
-<!-- start page title -->
-<div class="row">
-    <div class="col-12">
-        <div class="page-title-box">
-            <div class="page-title-right">
-                <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Home</a></li>
-                    <li class="breadcrumb-item active">Appointment Report</li>
-                </ol>
+<div class="module-page reports-page">
+    <div class="module-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="module-kicker">Reports</div>
+                <h2>Appointment Report</h2>
+                <p class="mb-0" style="color: rgba(255,255,255,.82);">Analyze appointment volume, status movement, and doctor utilization by date range.</p>
             </div>
-            <h4 class="page-title">Appointment Report</h4>
+            <div class="col-lg-5">
+                <div class="module-actions">
+                    <a href="{{ route('reports.pharmacy') }}" class="btn"><i class="mdi mdi-pill mr-1"></i> Pharmacy</a>
+                    <a href="{{ route('reports.doctors') }}" class="btn"><i class="mdi mdi-doctor mr-1"></i> Doctors</a>
+                    <a href="{{ route('reports.patients') }}" class="btn"><i class="mdi mdi-account-group mr-1"></i> Patients</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<!-- end page title -->
 
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 <!-- Filter Card -->
                 <div class="d-flex align-items-center justify-content-between">
@@ -40,7 +42,7 @@
 
 <div class="row">
     <div class="col-xl-6 col-lg-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 <h4 class="header-title mb-3">Appointment Report ({{ $dateRange }})</h4>
 
@@ -78,20 +80,20 @@
 
     <!-- Appointment Status Breakdown -->
     <div class="col-xl-6 col-lg-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 <h4 class="header-title mb-3">Appointment Status Breakdown</h4>
                 
                 <div class="d-flex flex-column">
-                    <div class="bg-light p-3 mb-2 rounded">
+                    <div class="report-stat mb-2">
                         <h5 class="mb-1">Confirmed</h5>
                         <p class="mb-0 font-weight-bold">{{ $statusCounts['confirmed'] }}</p>
                     </div>
-                    <div class="bg-light p-3 mb-2 rounded">
+                    <div class="report-stat mb-2">
                         <h5 class="mb-1">Pending</h5>
                         <p class="mb-0 font-weight-bold">{{ $statusCounts['pending'] }}</p>
                     </div>
-                    <div class="bg-light p-3 rounded">
+                    <div class="report-stat">
                         <h5 class="mb-1">Canceled</h5>
                         <p class="mb-0 font-weight-bold">{{ $statusCounts['canceled'] }}</p>
                     </div>
@@ -102,13 +104,13 @@
 
     <!-- Doctor Utilization -->
     <div class="col-xl-6 col-lg-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 <h4 class="header-title mb-3">Doctor Utilization</h4>
                 
                 <div class="d-flex flex-column">
                     @foreach($doctorUtilization as $doctor)
-                        <div class="bg-light p-3 mb-2 rounded">
+                        <div class="report-stat mb-2">
                             <h5 class="mb-1">{{ $doctor->doctor->name }}</h5>
                             <p class="mb-0 font-weight-bold">{{ $doctor->appointment_count }} appointments</p>
                         </div>
@@ -120,7 +122,7 @@
 
     <!-- Summary Card -->
     <div class="col-xl-6 col-lg-12">
-        <div class="card">
+        <div class="card module-panel">
             <div class="card-body">
                 <h4 class="header-title mb-3">Appointment Summary</h4>
 
@@ -158,4 +160,5 @@
     </div> <!-- end col -->
 </div>
 <!-- end row -->
+</div>
 @endsection
