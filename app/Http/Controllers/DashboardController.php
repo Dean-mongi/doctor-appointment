@@ -318,7 +318,9 @@ class DashboardController extends Controller
 
     public function notifications()
     {
+        auth()->user()->unreadNotifications->markAsRead();
         $notifications = auth()->user()->notifications()->paginate(20);
+
         return view('notifications.index', compact('notifications'));
     }
 }

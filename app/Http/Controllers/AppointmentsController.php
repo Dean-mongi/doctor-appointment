@@ -126,9 +126,15 @@ class AppointmentsController extends Controller
         if ($user->hasRole('super_admin')) {
             $appointments = $appointments;
         } elseif ($user->hasRole('doctor')) {
-            $appointments = $appointments->where('doctor_id', $user->id);
+            $doctor = Doctor::where('user_id', $user->id)->first();
+            $appointments = $doctor
+                ? $appointments->where('doctor_id', $doctor->id)
+                : $appointments->whereRaw('1 = 0');
         } elseif ($user->hasRole('patient')) {
-            $appointments = $appointments->where('patient_id', $user->id);
+            $patient = Patient::where('user_id', $user->id)->first();
+            $appointments = $patient
+                ? $appointments->where('patient_id', $patient->id)
+                : $appointments->whereRaw('1 = 0');
         } else {
             abort(403, 'Unauthorized action.');
         }

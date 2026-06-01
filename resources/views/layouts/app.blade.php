@@ -397,10 +397,16 @@ label {
                                 </div>
                             </li>
 
+                            @php
+                                $unreadNotificationsCount = auth()->user()->unreadNotifications()->count();
+                                $recentNotifications = auth()->user()->notifications()->latest()->take(6)->get();
+                            @endphp
                             <li class="dropdown notification-list">
                                 <a class="nav-link dropdown-toggle arrow-none" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                                     <i class="dripicons-bell noti-icon"></i>
-                                    <span class="noti-icon-badge"></span>
+                                    @if($unreadNotificationsCount > 0)
+                                        <span class="noti-icon-badge"></span>
+                                    @endif
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right dropdown-menu-animated dropdown-lg">
 
@@ -416,9 +422,6 @@ label {
                                     </div>
 
                                     <div style="max-height: 230px;" data-simplebar>
-                                        @php
-                                            $recentNotifications = auth()->user()->notifications()->latest()->take(6)->get();
-                                        @endphp
                                         @forelse($recentNotifications as $notification)
                                             <a href="{{ route('notifications.index') }}" class="dropdown-item notify-item">
                                                 <div class="notify-icon bg-primary">
