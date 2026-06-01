@@ -189,25 +189,11 @@ label {
         <div class="wrapper">
             <!-- ========== Left Sidebar Start ========== -->
             <div class="left-side-menu">
-               <br>
-               <br>
-                <!-- LOGO -->
-                <a href="{{ route('dashboard')}}" class="logo text-center logo-light">
-                    <span class="logo-lg">
-                        <img src="{{ asset('assets/images/logo.png')}}" alt="" style="height: 100px;">
-                    </span>
-                    <span class="logo-sm">
-                        <img src="{{ asset('assets/images/logo_sm.png')}}" alt="" style="height: 100px;">
-                    </span>
-                </a>
-
-                <!-- LOGO -->
-                <a href="{{ route('dashboard')}}" class="logo text-center logo-dark">
-                    <span class="logo-lg">
-                        <img src="{{ asset('assets/images/logo.png')}}" alt="" style="height: 100px;">
-                    </span>
-                    <span class="logo-sm">
-                        <img src="{{ asset('assets/images/logo_sm.png')}}" alt="" style="height: 100px;">
+                <a href="{{ route('dashboard')}}" class="doctorapp-brand">
+                    <span class="doctorapp-brand-mark"><i class="mdi mdi-hospital-building"></i></span>
+                    <span class="doctorapp-brand-copy">
+                        <strong>DoctorCare</strong>
+                        <small>Hospital System</small>
                     </span>
                 </a>
 
@@ -523,8 +509,8 @@ label {
                             <li class="dropdown notification-list">
                                 <a class="nav-link dropdown-toggle nav-user arrow-none mr-0" data-toggle="dropdown" href="#" role="button" aria-haspopup="false"
                                     aria-expanded="false">
-                                    <span class="account-user-avatar"> 
-                                        <img src="{{ asset('assets/images/users/avatar-1.jpg')}}" alt="user-image" class="rounded-circle">
+                                    <span class="account-user-avatar da-profile-mini"> 
+                                        <i class="mdi mdi-account"></i>
                                     </span>
                                     <span>
                                         <span class="account-user-name">{{ Auth::user()->name }}</span>

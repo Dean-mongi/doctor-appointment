@@ -46,9 +46,7 @@
     <div class="col-md-6 col-lg-4">
         <div class="card text-center module-panel">
             <div class="card-body">
-                <div class="avatar-lg mx-auto mb-3">
-                    <img src="{{ $doctor->avatar ? asset('storage/' . $doctor->avatar) : 'https://via.placeholder.com/100' }}" alt="{{ $doctor->name }}" class="rounded-circle img-thumbnail">
-                </div>
+                <div class="da-profile-avatar da-profile-avatar-lg mx-auto mb-3"><i class="mdi mdi-account"></i></div>
                 <h4 class="card-title">{{ $doctor->name }}</h4>
                 <p class="text-muted mb-2">{{ ucfirst($doctor->specialty) }}</p>
                 <span class="badge badge-primary">Appointments: {{ $doctor->appointments_count }}</span>

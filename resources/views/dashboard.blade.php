@@ -177,7 +177,7 @@
                                         <tr>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <img src="{{ $doctor->avatar ? asset('storage/' . $doctor->avatar) : 'https://via.placeholder.com/50' }}" class="da-avatar mr-2" alt="{{ $doctor->name }}">
+                                                    <span class="da-profile-avatar mr-2"><i class="mdi mdi-account"></i></span>
                                                     <div>
                                                         <strong>{{ $doctor->name }}</strong>
                                                         <div class="text-muted font-12">ID: {{ $doctor->id }}</div>

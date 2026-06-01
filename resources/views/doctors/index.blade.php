@@ -50,9 +50,7 @@
                         <tbody>
                             @foreach ($doctors as $doctor)
                                 <tr>
-                                    <td>
-                                        <img src="{{ $doctor->avatar ? asset('storage/' . $doctor->avatar) : 'https://via.placeholder.com/50' }}" alt="Doctor Picture" class="rounded-circle" width="50" height="50">
-                                    </td>
+                                    <td><span class="da-profile-avatar"><i class="mdi mdi-account"></i></span></td>
                                     <td>{{ $doctor->id }}</td>
                                     <td>{{ $doctor->name }}</td>
                                     <td>{{ $doctor->email }}</td>
