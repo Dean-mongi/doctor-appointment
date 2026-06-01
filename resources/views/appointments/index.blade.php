@@ -24,6 +24,14 @@
     <div class="col-12">
         <div class="card module-panel">
             <div class="card-body">
+                @if(session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+
                 <div class="module-toolbar">
                     <h4 class="header-title mb-0">Appointment Queue</h4>
                     <form class="module-search" method="GET" action="{{ route('appointments.index') }}">

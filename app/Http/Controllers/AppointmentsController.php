@@ -16,6 +16,38 @@ use Illuminate\Support\Facades\Auth;
 
 class AppointmentsController extends Controller
 {
+    private function linkedDoctorId($user): ?int
+    {
+        return Doctor::where('user_id', $user->id)->value('id');
+    }
+
+    private function linkedPatientId($user): ?int
+    {
+        return Patient::where('user_id', $user->id)->value('id');
+    }
+
+    private function ownsAppointment($user, Appointment $appointment): bool
+    {
+        $doctorId = $this->linkedDoctorId($user);
+        $patientId = $this->linkedPatientId($user);
+
+        return ($doctorId && $doctorId === (int) $appointment->doctor_id)
+            || ($patientId && $patientId === (int) $appointment->patient_id);
+    }
+
+    private function canEditAppointment($user, Appointment $appointment): bool
+    {
+        return $user->hasRole('super_admin')
+            || $user->can('edit appointments')
+            || $this->ownsAppointment($user, $appointment);
+    }
+
+    private function canDeleteAppointment($user, Appointment $appointment): bool
+    {
+        return $user->hasRole('super_admin')
+            || $user->can('delete appointments')
+            || $this->ownsAppointment($user, $appointment);
+    }
 
     public function index1(Request $request)
     {
@@ -28,10 +60,12 @@ class AppointmentsController extends Controller
             $appointments = Appointment::query();
         } elseif ($user->hasRole('doctor')) {
             // Doctor can see only their own appointments
-            $appointments = Appointment::where('doctor_id', $user->id);
+            $doctorId = $this->linkedDoctorId($user);
+            $appointments = $doctorId ? Appointment::where('doctor_id', $doctorId) : Appointment::whereRaw('1 = 0');
         } elseif ($user->hasRole('patient')) {
             // Patient can see only their own appointments
-            $appointments = Appointment::where('patient_id', $user->id);
+            $patientId = $this->linkedPatientId($user);
+            $appointments = $patientId ? Appointment::where('patient_id', $patientId) : Appointment::whereRaw('1 = 0');
         } else {
             // Handle other roles if necessary
             $appointments = Appointment::query(); // Default case
@@ -126,14 +160,14 @@ class AppointmentsController extends Controller
         if ($user->hasRole('super_admin')) {
             $appointments = $appointments;
         } elseif ($user->hasRole('doctor')) {
-            $doctor = Doctor::where('user_id', $user->id)->first();
-            $appointments = $doctor
-                ? $appointments->where('doctor_id', $doctor->id)
+            $doctorId = $this->linkedDoctorId($user);
+            $appointments = $doctorId
+                ? $appointments->where('doctor_id', $doctorId)
                 : $appointments->whereRaw('1 = 0');
         } elseif ($user->hasRole('patient')) {
-            $patient = Patient::where('user_id', $user->id)->first();
-            $appointments = $patient
-                ? $appointments->where('patient_id', $patient->id)
+            $patientId = $this->linkedPatientId($user);
+            $appointments = $patientId
+                ? $appointments->where('patient_id', $patientId)
                 : $appointments->whereRaw('1 = 0');
         } else {
             abort(403, 'Unauthorized action.');
@@ -203,8 +237,8 @@ class AppointmentsController extends Controller
             abort(401, 'Unauthorized');
         }
 
-        if ($user->role === 'super_admin' || $user->id === $appointment->doctor_id || $user->id === $appointment->patient_id) {
-            return view('appointments.show', compact('appointment'));
+        if ($user->hasRole('super_admin') || $user->can('view appointments') || $this->ownsAppointment($user, $appointment)) {
+            return redirect()->route('appointments.index');
         }
 
         abort(403, 'Unauthorized action.');
@@ -236,7 +270,7 @@ class AppointmentsController extends Controller
             abort(401, 'Unauthorized');
         }
 
-        if ($user->role === 'super_admin' || $user->id === $appointment->doctor_id) {
+        if ($this->canEditAppointment($user, $appointment)) {
             $doctors = Doctor::all();
             return view('appointments.edit', compact('appointment', 'doctors'));
         }
@@ -264,12 +298,11 @@ class AppointmentsController extends Controller
             return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
         }
 
-        if ($user->role === 'super_admin' || $user->id === $appointment->doctor_id) {
+        if ($this->canEditAppointment($user, $appointment)) {
             try {
-                $appointment->update($request->all());
+                $appointment->update($validator->validated());
                 return response()->json(['success' => true, 'message' => 'Appointment updated successfully.'], 200);
-            } catch (\Exception $e) {
-                Log::error('Failed to update appointment: '.$e->getMessage());
+            } catch (\Throwable $e) {
                 return response()->json(['success' => false, 'message' => 'Failed to update appointment.'], 500);
             }
         }
@@ -285,7 +318,7 @@ class AppointmentsController extends Controller
             abort(401, 'Unauthorized');
         }
 
-        if ($user->role === 'super_admin' || $user->id === $appointment->doctor_id) {
+        if ($this->canDeleteAppointment($user, $appointment)) {
             if ($appointment->delete()) {
                 return redirect()->route('appointments.index')->with('success', 'Appointment deleted successfully.');
             } else {
@@ -293,7 +326,7 @@ class AppointmentsController extends Controller
             }
         }
 
-        abort(403, 'Unauthorized action.');
+        return redirect()->route('appointments.index')->with('error', 'You are not allowed to delete this appointment.');
     }
 
     public function confirm($id)
