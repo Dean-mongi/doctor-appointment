@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ReportController;
@@ -19,10 +18,8 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PharmacistsController;
 
 
-// Public landing page. Keep authenticated staff moving straight to their workspace.
-Route::get('/', function () {
-    return Auth::check() ? redirect()->route('dashboard') : view('welcome');
-})->name('home');
+// The public homepage is the first page visitors see, regardless of sign-in state.
+Route::view('/', 'welcome')->name('home');
 
 
 
