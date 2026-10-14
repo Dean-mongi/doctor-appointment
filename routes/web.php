@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ReportController;
@@ -18,10 +19,10 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PharmacistsController;
 
 
-// // Public Routes
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+// Public landing page. Keep authenticated staff moving straight to their workspace.
+Route::get('/', function () {
+    return Auth::check() ? redirect()->route('dashboard') : view('welcome');
+})->name('home');
 
 
 
@@ -32,7 +33,7 @@ Route::middleware([
     'verified',
 ])->group(function () {
     // Dashboard
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Profile
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');

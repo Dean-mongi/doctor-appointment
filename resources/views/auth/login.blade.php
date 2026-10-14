@@ -2,7 +2,8 @@
 <html lang="en">
     <head>
         <meta charset="utf-8" />
-        <title>Doctor Appointment System | Sign In</title>
+        <title>Staff sign in | Doctor Appointment System</title>
+        <meta name="description" content="Secure sign in for the Doctor Appointment System care operations workspace.">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
         <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
@@ -20,9 +21,9 @@
                             <div class="row no-gutters">
                                 <div class="col-lg-5 auth-brand d-flex flex-column justify-content-between">
                                     <div>
-                                        <div class="auth-brand-mark mb-4">
+                                        <a class="auth-brand-mark mb-4" href="{{ route('home') }}" aria-label="Back to homepage">
                                             <i class="mdi mdi-stethoscope"></i>
-                                        </div>
+                                        </a>
                                         <p class="hero-kicker mb-2">Hospital Operations</p>
                                         <h2 class="mb-3">Welcome back to your care command center.</h2>
                                         <p class="mb-0" style="color: rgba(255,255,255,.82);">
@@ -40,12 +41,12 @@
                                 <div class="col-lg-7">
                                     <div class="card-body p-4 p-md-5">
                                         <div class="mb-4">
-                                            <h4 class="text-dark font-weight-bold mb-1">Sign In</h4>
+                                            <h4 class="text-dark font-weight-bold mb-1">Sign in to your workspace</h4>
                                             <p class="text-muted mb-0">Use your email and password to continue.</p>
                                         </div>
 
                                         @if ($errors->any())
-                                            <div class="alert alert-danger">
+                                            <div class="alert alert-danger" role="alert">
                                                 {{ $errors->first() }}
                                             </div>
                                         @endif
@@ -81,7 +82,7 @@
 
                                             <div class="form-group mb-4">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="remember_me" name="remember">
+                                                    <input type="checkbox" class="custom-control-input" id="remember_me" name="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
                                                     <label class="custom-control-label" for="remember_me">Remember me on this device</label>
                                                 </div>
                                             </div>
@@ -92,8 +93,9 @@
                                         </form>
 
                                         <div class="text-center mt-4">
-                                            <p class="text-muted mb-0">Don't have an account? <a href="{{ route('register') }}" class="font-weight-bold">Sign Up</a></p>
+                                            <p class="text-muted mb-0">Need an account? <a href="{{ route('register') }}" class="font-weight-bold">Create one</a></p>
                                         </div>
+                                        <div class="text-center mt-3"><a href="{{ route('home') }}" class="text-muted"><i class="mdi mdi-arrow-left mr-1"></i>Back to homepage</a></div>
                                     </div>
                                 </div>
                             </div>
